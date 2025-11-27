@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Gift Finder 🎁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Трохи кращий шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at top left, #ff8af2 0, #5f5bff 30%, #1b1b2f 70%, #050816 100%);
+            --card-bg: rgba(10, 14, 35, 0.82);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent: #ff9cf5;
+            --accent-strong: #ff51e0;
+            --accent-blue: #6aa8ff;
+            --text-main: #f5f7ff;
+            --text-muted: #9ba0c6;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
+            --radius-lg: 20px;
+            --radius-xl: 26px;
+            --transition-fast: 0.18s ease-out;
+            --transition-med: 0.28s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 16px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .title-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(10, 14, 35, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 0 18px rgba(255, 132, 255, 0.35);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .title-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-strong);
+            box-shadow: 0 0 12px var(--accent-strong);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 40px);
+            letter-spacing: 0.03em;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 340px) minmax(0, 1.4fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        /* FORM CARD */
+
+        .form-card {
+            position: relative;
+            border-radius: var(--radius-xl);
+            padding: 22px 20px 20px;
+            background: linear-gradient(
+                        135deg,
+                        rgba(255, 255, 255, 0.16),
+                        rgba(255, 255, 255, 0.02)
+            );
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left, rgba(255, 156, 245, 0.2), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(111, 182, 255, 0.18), transparent 55%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .form-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-title {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .form-caption {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .form-field label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .form-field select {
+            width: 100%;
+            padding: 8px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            background: rgba(5, 6, 22, 0.65);
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .form-field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(255, 156, 245, 0.55);
+            background: rgba(3, 6, 30, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .submit-row {
+            margin-top: 6px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 999px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-strong), var(--accent-blue));
+            color: #050816;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.55);
+            transition: transform var(--transition-med), box-shadow var(--transition-med), filter var(--transition-med);
+        }
+
+        .submit-btn span {
+            font-size: 15px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px) scale(1.01);
+            filter: brightness(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0) scale(0.99);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        /* RESULTS PANEL */
+
+        .results-card {
+            border-radius: var(--radius-xl);
+            padding: 18px 18px 20px;
+            background: rgba(5, 7, 25, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .results-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .results-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .results-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .results-count {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: var(--text-muted);
+        }
+
+        .gifts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .gift-card {
+            position: relative;
+            border-radius: var(--radius-lg);
+            padding: 12px 12px 14px;
+            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.12), rgba(7, 8, 28, 0.96));
+            border: 1px solid var(--card-border);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            overflow: hidden;
+            transition: transform var(--transition-med), box-shadow var(--transition-med), border-color var(--transition-med), background var(--transition-med);
+        }
+
+        .gift-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                    135deg,
+                    rgba(255, 156, 245, 0.25),
+                    transparent 40%,
+                    rgba(96, 165, 250, 0.34)
+            );
+            opacity: 0;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            transition: opacity var(--transition-med);
+        }
+
+        .gift-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+            border-color: rgba(255, 156, 245, 0.6);
+            background: radial-gradient(circle at top, rgba(255,255,255,0.22), rgba(5,7,25,0.96));
+        }
+
+        .gift-card:hover::before {
+            opacity: 0.9;
+        }
+
+        .gift-image-wrap {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background: radial-gradient(circle at center, #222642, #050816);
+        }
+
+        .gift-image-wrap img {
+            width: 100%;
+            height: 170px;
+            object-fit: contain;
+            display: block;
+            transition: transform var(--transition-med), filter var(--transition-med);
+        }
+
+        .gift-card:hover .gift-image-wrap img {
+            transform: scale(1.04);
+            filter: saturate(1.15);
+        }
+
+        .gift-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 4px 0 10px;
+            min-height: 30px;
+        }
+
+        .gift-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gift-tag {
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(9, 12, 40, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 6px 11px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--accent-strong), var(--accent-blue));
+            color: #050816;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+        }
+
+        .copy-btn span.icon {
+            font-size: 13px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.06);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.9);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.7);
+        }
+
+        /* NO RESULTS */
+
+        .no-results {
+            margin-top: 6px;
+            padding: 14px 14px;
+            border-radius: 14px;
+            border: 1px dashed rgba(255, 255, 255, 0.28);
+            background: rgba(10, 14, 35, 0.7);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(10, 200, 140, 0.1);
+            border: 1px solid rgba(72, 235, 180, 0.5);
+            color: #eafff6;
+            font-size: 13px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(18px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+            z-index: 50;
+        }
+
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+<div class="page">
+    <header class="header">
+        <div class="title-badge">
+            <span class="title-badge-dot"></span>
+            <span>personal gift picker</span>
+        </div>
+        <h1>Gift Finder 🎁</h1>
+        <p class="subtitle">
+            Обери для кого, вік та привід — отримаєш список ідей з готовими назвами,
+            які можна просто вставити в будь-який магазин.
+        </p>
+    </header>
+
+    <main class="layout">
+        <!-- LEFT: FORM -->
+        <section class="form-card">
+            <div class="form-inner">
+                <div class="form-title">Параметри подарунка</div>
+                <form method="get">
+                    {{ form.non_field_errors }}
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>{{ form.recipient_type.label }}</label>
+                            {{ form.recipient_type }}
+                        </div>
+
+                        <div class="form-field">
+                            <label>{{ form.age_group.label }}</label>
+                            {{ form.age_group }}
+                        </div>
+
+                        <div class="form-field">
+                            <label>{{ form.occasion.label }}</label>
+                            {{ form.occasion }}
+                        </div>
+                    </div>
+
+                    <div class="submit-row">
+                        <button type="submit" class="submit-btn">
+                            <span>Підібрати</span>
+                            <span>🎁</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- RIGHT: RESULTS -->
+        <section class="results-card">
+            <div class="results-header">
+                <div>
+                    <h2>Результати підбору</h2>
+                    <div class="results-subtitle">
+                        Назву можна скопіювати та вставити в пошук на e-katalog, Rozetka, Amazon — куди захочеш.
+                    </div>
+                </div>
+                {% if gifts %}
+                    <div class="results-count">
+                        Знайдено: {{ gifts|length }}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if gifts %}
+                <div class="gifts-grid">
+                    {% for gift in gifts %}
+                        <article class="gift-card">
+                            <div class="gift-image-wrap">
+                                {% if gift.image_url %}
+                                    <img src="{{ gift.image_url }}" alt="{{ gift.name }}">
+                                {% endif %}
+                            </div>
+
+                            <h3 class="gift-name">{{ gift.name }}</h3>
+
+                            <div class="gift-footer">
+    <button type="button"
+            class="copy-btn"
+            onclick="copyGiftName('{{ gift.name|escapejs }}')">
+        <span class="icon">📋</span>
+        <span>Скопіювати</span>
+    </button>
+</div>
+
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-results">
+                    Поки що список пустий. Задай параметри ліворуч і натисни
+                    <strong>«Підібрати»</strong> — ми згенеруємо варіанти, які можна відразу гуглити.
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<div id="toast" class="toast">Назву скопійовано в буфер обміну 💾</div>
+
+<script>
+    function copyGiftName(name) {
+        if (!navigator.clipboard) {
+            // fallback для старих браузерів
+            const textarea = document.createElement("textarea");
+            textarea.value = name;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand("copy");
+            } catch (err) {}
+            document.body.removeChild(textarea);
+        } else {
+            navigator.clipboard.writeText(name).catch(function (err) {
+                console.error("Clipboard error:", err);
+            });
+        }
+
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(function () {
+            toast.classList.remove("show");
+        }, 2000);
+    }
+</script>
+</body>
+</html>
